@@ -131,7 +131,41 @@ public class Board {
         return count;
     }
 
-    
+    /**
+     * searching for a 5 same adjadcent marbles in a specific house in eight
+     * directions
+     * 
+     * @param i
+     * @param j
+     * @param marble
+     * @return
+     */
+    public boolean checkDirections(int i, int j, House marble) {
+        for (int a = -1; a <= 1; a++)
+            for (int b = -1; b <= 1; b++) {
+                if (a == 0 && b == 0)
+                    continue;
+                if (lineLength(i, j, a, b, marble) >= 5)
+                    return true;
+            }
+        return false;
+    }
+
+    /**
+     * checking whole board for a five-adjacent set
+     * 
+     * @param player
+     * @return
+     */
+    public boolean checkBoard(Player player) {
+        for (int i = 0; i < 6; i++)
+            for (int j = 0; j < 6; j++)
+                if (checkDirections(i, j, player.marble)) {
+                    return true;
+                }
+        return false;
+    }
+
     public static void main(String[] args) {
         Board test = new Board();
         test.board[0][1] = House.BLACK;
