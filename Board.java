@@ -1,5 +1,9 @@
 import java.util.*;
 
+/**
+ * house type enumerating the only three possible values for each house in game
+ * board
+ */
 enum House {
     EMPTY, BLACK, RED;
 
@@ -14,6 +18,10 @@ enum House {
         }
     }
 
+    /**
+     * 
+     * @return the opposite value if not empty
+     */
     public House theOther() {
         if (this == BLACK)
             return RED;
@@ -23,10 +31,22 @@ enum House {
     }
 }
 
-class Board {
+/**
+ * this class roles as base class of pentago game, containing board display and
+ * marble placement, checking rules of game implementing
+ * 
+ * @author M.Safari
+ * @version 1399.01.19
+ */
+public class Board {
+    // stimulating the game board
     private House[][] board;
+    // pointiong to center of blocks in board
     final private int[][] centers;
 
+    /**
+     * creating deault board
+     */
     public Board() {
         board = new House[6][];
         for (int i = 5; i >= 0; i--) {
@@ -42,9 +62,12 @@ class Board {
         centers[3] = new int[] { 4, 1 };
     }
 
+    /**
+     * displaying board with ⚪, 🔴, ⚫, chaaractars
+     */
     public void display() {
         for (int j = 0; j < 6; j++)
-            System.out.printf("%4s", (char)(j + 1));
+            System.out.printf("%4s", (char) (j + 1));
         System.out.println();
         for (int i = 0; i < 6; i++) {
             if (i == 3) {
@@ -70,7 +93,7 @@ class Board {
                 // rotating clockwise
                 board[i + a][j + b] = board[i - b][j + a];
                 board[i - b][j + a] = board[i - a][j - b];
-                board[i - a][j - b] =  board[i + b][j - a];
+                board[i - a][j - b] = board[i + b][j - a];
                 board[i + b][j - a] = temp;
             } else if (rotationDirection == -1) {
                 // roatating counter-clockwise
@@ -82,6 +105,33 @@ class Board {
         }
     }
 
+    public boolean isEmpty(int i, int j) {
+        return (i >= 0 && j >= 0 && i < 6 && j < 6) ? (board[i][j] == House.EMPTY) : false;
+    }
+
+    public void putMarble(int i, int j, House marble) {
+        if (isEmpty(i, j))
+            board[i][j] = marble;
+    }
+
+    /**
+     * counts a serie of same adjacent marbles
+     * 
+     * @param i
+     * @param j
+     * @param iStep
+     * @param jStep
+     * @param marble
+     * @return
+     */
+    public int lineLength(int i, int j, int iStep, int jStep, House marble) {
+        int count = 0;
+        for (int a = i, b = j; ((a >= 0 && b >= 0 && a < 6 && b < 6)) && board[a][b] == marble; a += iStep, b += jStep)
+            count++;
+        return count;
+    }
+
+    
     public static void main(String[] args) {
         Board test = new Board();
         test.board[0][1] = House.BLACK;
