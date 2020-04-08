@@ -42,7 +42,7 @@ public class Board {
     // stimulating the game board
     private House[][] board;
     // pointiong to center of blocks in board
-    final private int[][] centers;
+    final public int[][] centers;
 
     /**
      * creating deault board
@@ -65,7 +65,7 @@ public class Board {
     /**
      * displaying board with ⚪, 🔴, ⚫, chaaractars
      */
-    public void display() {
+    public void display(Player player, int iLast, int jLast) {
         for (int j = 0; j < 6; j++)
             System.out.printf("%4s", (char) (j + 1));
         System.out.println();
@@ -79,39 +79,50 @@ public class Board {
             for (int j = 0; j < 6; j++) {
                 if (j == 3)
                     System.out.print("|");
-                System.out.print(board[i][j].marble());
+                System.out.print(((i == iLast && j == jLast) ? "\033[46m" : "") + board[i][j].marble() + "\033[0m");
             }
             System.out.println();
         }
+        // more description about playing player
+        System.out.println(((player.marble == House.RED) ? "RED" : "Black") + " player : " + player.marble.marble());
     }
 
-    public void rotateBlock(int region, int rotationDirection) {
-        int i = centers[region][0], j = centers[region][1];
-        for (int a = -1, b = -1; b < 1; b++) {
-            House temp = board[a + i][b + j];
-            if (rotationDirection == 1) {
-                // rotating clockwise
-                board[i + a][j + b] = board[i - b][j + a];
-                board[i - b][j + a] = board[i - a][j - b];
-                board[i - a][j - b] = board[i + b][j - a];
-                board[i + b][j - a] = temp;
-            } else if (rotationDirection == -1) {
-                // roatating counter-clockwise
-                board[i + a][j + b] = board[i + b][j - a];
-                board[i + b][j - a] = board[i - a][j - b];
-                board[i - a][j - b] = board[i - b][j + a];
-                board[i - b][j + a] = temp;
+    public boolean rotateBlock(int region, int rotationDirection) {
+        boolean proccessResult = false;
+        if (region < 4 && region >= 0) {
+            int i = centers[region][0], j = centers[region][1];
+            for (int a = -1, b = -1; b < 1; b++) {
+                House temp = board[a + i][b + j];
+                if (rotationDirection == 1) {
+                    // rotating clockwise
+                    board[i + a][j + b] = board[i - b][j + a];
+                    board[i - b][j + a] = board[i - a][j - b];
+                    board[i - a][j - b] = board[i + b][j - a];
+                    board[i + b][j - a] = temp;
+                    proccessResult = true;
+                } else if (rotationDirection == -1) {
+                    // roatating counter-clockwise
+                    board[i + a][j + b] = board[i + b][j - a];
+                    board[i + b][j - a] = board[i - a][j - b];
+                    board[i - a][j - b] = board[i - b][j + a];
+                    board[i - b][j + a] = temp;
+                    proccessResult = true;
+                }
             }
         }
+        return proccessResult;
     }
 
     public boolean isEmpty(int i, int j) {
         return (i >= 0 && j >= 0 && i < 6 && j < 6) ? (board[i][j] == House.EMPTY) : false;
     }
 
-    public void putMarble(int i, int j, House marble) {
-        if (isEmpty(i, j))
+    public boolean putMarble(int i, int j, House marble) {
+        if (isEmpty(i, j)) {
             board[i][j] = marble;
+            return true;
+        }
+        return false;
     }
 
     /**
@@ -164,17 +175,6 @@ public class Board {
                     return true;
                 }
         return false;
-    }
-
-    public static void main(String[] args) {
-        Board test = new Board();
-        test.board[0][1] = House.BLACK;
-        test.board[0][0] = House.RED;
-        test.display();
-        test.rotateBlock(0, 1);
-        test.display();
-        test.rotateBlock(0, 1);
-        test.display();
     }
 
 }
