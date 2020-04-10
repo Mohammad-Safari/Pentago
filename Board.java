@@ -177,4 +177,11 @@ public class Board {
         return false;
     }
 
+    /**
+     * @return the board House
+     */
+    public House getHouse(int i,int j) {
+        return board[i][j];
+    }
+
 }

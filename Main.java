@@ -20,7 +20,7 @@ public class Main {
         Player[] gPlayer = new Player[2];
         {
             gPlayer[0] = new Player(House.RED);
-            gPlayer[1] = /* ((playerNum == 1) ? new AI(House.BLACK) : */ new Player(House.BLACK)/* ) */;
+            gPlayer[1] = ((playerNum == 1) ? new AI(House.BLACK, gBoard) : new Player(House.BLACK));
             gPlayer[0].setOpponent(gPlayer[1]);
             gPlayer[1].setOpponent(gPlayer[0]);
         }
@@ -42,27 +42,30 @@ public class Main {
         while (true) {
             // trying to keep the game forward
             int i, j, r, d;
-            /*
-             * if (player instanceof AI) {
-             * 
-             * } else
-             */ {
+
+            if (player instanceof AI) {
+                player.put();
+            } else {
                 System.out.println("Placing Marble");
                 do {
                     i = sc.nextInt() - 1;
                     j = sc.nextInt() - 1;
                 } while (!gBoard.putMarble(i, j, marble));
-                // board after placement
-                {
-                    gBoard.display(player, i, j);
-                }
-                //
-                if (gBoard.checkBoard(player)) {
-                    if (gBoard.checkBoard(player.getOpponent()))
-                        draw = true;
-                    break;
-                }
-                //
+            }
+            // board after placement
+            {
+                gBoard.display(player, i, j);
+            }
+            //
+            if (gBoard.checkBoard(player)) {
+                if (gBoard.checkBoard(player.getOpponent()))
+                    draw = true;
+                break;
+            }
+            //
+            if (player instanceof AI) {
+                player.rotate();
+            } else {
                 System.out.println("Rotating a Block");
                 do {
                     System.out.println("1 | 2");
