@@ -27,6 +27,9 @@ public class AI extends Player {
 
     }
 
+    public void acrossBlocks(){}
+    public void adjacentBlocks(){}
+
     public int put() {
         // check blocks
         // manuvering upon two blocks
@@ -37,14 +40,89 @@ public class AI extends Player {
         }
         // if two blocks are across each other
         if (Math.abs(blocks.get(0) - blocks.get(1)) == 2) {
+            if (origin.checkDirections(origin.centers[blocks.get(0)][0], origin.centers[blocks.get(0)][1], marble, 2)
+                    || origin.checkDirections(origin.centers[blocks.get(1)][0], origin.centers[blocks.get(1)][1],
+                            marble, 2)) // if no way between blocks has been shape , shape it
+            {
+                int[] steps = origin.whichDirections(origin.centers[blocks.get(0)][0], origin.centers[blocks.get(0)][1],
+                        marble);
+                // if can not put in such a house
+                if (!origin.putMarble(steps[0], steps[1], marble)) {
+                    steps = origin.whichDirections(origin.centers[blocks.get(1)][0], origin.centers[blocks.get(1)][1],
+                            marble);
+                    // if can not even in this house
+                    if (!origin.putMarble(steps[0], steps[1], marble)) {
+                        randPut();
+                        return -1;
+                    }
+                }
+            } else // if no way between blocks has been shape , shape it
+            {
+                int a, b, c = rand.nextInt(2), d = 0;
+                do {
+                    a = rand.nextInt(2) == 1 ? 1 : -1;
+                    b = rand.nextInt(2) == 0 ? -1 : 1;
+                    d++;
+                } while (!fillBlock(blocks.get(c), a, b));
+                if (d == 1000) {
+                    randPut();
+                    return -1;
+                }
+                return c;
+            }
 
         } else // if two blocks are adjacent
         {
+            if (origin.checkDirections(origin.centers[blocks.get(0)][0], origin.centers[blocks.get(0)][1], marble, 2)
+                    || origin.checkDirections(origin.centers[blocks.get(1)][0], origin.centers[blocks.get(1)][1],
+                            marble, 2)) // if there is a way we shape for penta-length
+            {
+                int[] steps = origin.whichDirections(origin.centers[blocks.get(0)][0], origin.centers[blocks.get(0)][1],
+                        marble);
+                if (!origin.putMarble(steps[0], steps[1], marble)) {
+                    steps = origin.whichDirections(origin.centers[blocks.get(1)][0], origin.centers[blocks.get(1)][1],
+                            marble);
+                    if (!origin.putMarble(steps[0], steps[1], marble)) {
+                        randPut();
+                        return -1;
+                    }
+                    return -1;
+                }
+            } else // if no way between blocks has been shape , shape it
+            {
+                int a, b, c = rand.nextInt(2), d = 0;
+                do {
+                    a = rand.nextInt(3);
+                    if (a == 0)
+                        b = rand.nextInt(2) == 0 ? -1 : 1;
+                    else
+                        b = 0;
+                    d++;
+                } while (!fillBlock(blocks.get(c), a, b) || d == 1000);
+                if (d == 1000) {
+                    randPut();
+                    return -1;
+                }
+                return c;
+            }
         }
         return -1;
     }
 
-    public void rotate() {
+    public void rotate(int block) {
+        if (block == -1) {
+            block = rand.nextInt(4);
+        }
+        if (!origin.checkDirections(origin.centers[block][0], origin.centers[block][1], marble, 3))
+            origin.rotateBlock(block, 1);
+        if (!origin.checkDirections(origin.centers[block][0], origin.centers[block][1], marble, 3)) {
+            origin.rotateBlock(block, -1);
+            origin.rotateBlock(block, -1);
+        }
+        if (!origin.checkDirections(origin.centers[block][0], origin.centers[block][1], marble, 3)) {
+            origin.rotateBlock(block, 1);
+            randRotate();
+        }
 
     }
 

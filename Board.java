@@ -143,7 +143,7 @@ public class Board {
     }
 
     /**
-     * searching for a 5 same adjadcent marbles in a specific house in eight
+     * searching for a 5 or any length, same adjadcent marbles in a specific house in eight
      * directions
      * 
      * @param i
@@ -151,15 +151,30 @@ public class Board {
      * @param marble
      * @return
      */
-    public boolean checkDirections(int i, int j, House marble) {
+    public boolean checkDirections(int i, int j, House marble, int bound) {
         for (int a = -1; a <= 1; a++)
             for (int b = -1; b <= 1; b++) {
                 if (a == 0 && b == 0)
                     continue;
-                if (lineLength(i, j, a, b, marble) >= 5)
+                if (lineLength(i, j, a, b, marble) >= bound)
                     return true;
             }
         return false;
+    }
+
+    public int[] whichDirections(int i, int j, House marble) {
+        for (int a = -1; a <= 1; a++)
+            for (int b = -1; b <= 1; b++) {
+                if (a == 0 && b == 0)
+                    continue;
+                int unit = lineLength(i, j, a, b, marble);
+                if (unit != 0 && Math.abs(unit) != 1)
+                    if (isEmpty(i + a * unit, j + b * unit))
+                        return new int[] { i + a * unit, j + b * unit };
+                    else if (isEmpty(i - a, j - b))
+                        return new int[] { i - a, j - b };
+            }
+        return new int[] { -1, -1 };
     }
 
     /**
@@ -171,7 +186,7 @@ public class Board {
     public boolean checkBoard(Player player) {
         for (int i = 0; i < 6; i++)
             for (int j = 0; j < 6; j++)
-                if (checkDirections(i, j, player.marble)) {
+                if (checkDirections(i, j, player.marble, 5)) {
                     return true;
                 }
         return false;
@@ -180,7 +195,7 @@ public class Board {
     /**
      * @return the board House
      */
-    public House getHouse(int i,int j) {
+    public House getHouse(int i, int j) {
         return board[i][j];
     }
 

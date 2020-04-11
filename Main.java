@@ -41,10 +41,10 @@ public class Main {
         }
         while (true) {
             // trying to keep the game forward
-            int i, j, r, d;
+            int i = -1, j = -1, r, d, block = 0;
 
             if (player instanceof AI) {
-                player.put();
+                block = ((AI) player).put();
             } else {
                 System.out.println("Placing Marble");
                 do {
@@ -64,7 +64,7 @@ public class Main {
             }
             //
             if (player instanceof AI) {
-                player.rotate();
+                ((AI) player).rotate(block);
             } else {
                 System.out.println("Rotating a Block");
                 do {
@@ -81,6 +81,13 @@ public class Main {
                 if (gBoard.checkBoard(player)) {
                     if (gBoard.checkBoard(player.getOpponent()))
                         draw = true;
+                    break;
+                }
+                //
+                if (gBoard.checkBoard(player.getOpponent())) {
+                    if (gBoard.checkBoard(player))
+                        draw = true;
+                    player = player.getOpponent();
                     break;
                 }
                 //
